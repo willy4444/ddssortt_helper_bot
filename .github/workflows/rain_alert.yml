@@ -1,0 +1,39 @@
+name: Rain Alert
+
+on:
+  schedule:
+    # 台灣時間每天早上 8:00 執行
+    # GitHub Actions 使用 UTC，所以台灣 08:00 = UTC 00:00
+    - cron: "0 0 * * *"
+
+  # 允許我們手動執行測試
+  workflow_dispatch:
+
+jobs:
+  rain-alert:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # 取得 GitHub 裡面的 Python 程式
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 安裝 Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 安裝 requests
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      # 執行 Python
+      - name: Run rain alert
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python rain_alert.py
